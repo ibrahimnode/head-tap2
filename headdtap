@@ -1,0 +1,17 @@
+while wait(1) do
+
+for _, v in pairs(game:GetService("Players"):GetPlayers()) do
+
+if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+
+v.Character.Head.CanCollide = false
+
+v.Character.Head.Size = Vector3.new(3, 3, 3)
+
+v.Character.Head.Transparency = 0.5
+
+end
+
+end
+
+end
