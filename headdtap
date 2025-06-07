@@ -1,17 +1,58 @@
-while wait(1) do
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-for _, v in pairs(game:GetService("Players"):GetPlayers()) do
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+screenGui.Name = "HeadSizeGui"
 
-if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+local frame = Instance.new("Frame", screenGui)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.BackgroundTransparency = 0.3
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
 
-v.Character.Head.CanCollide = false
+local textBox = Instance.new("TextBox", frame)
+textBox.Position = UDim2.new(0, 10, 0, 10)
+textBox.Size = UDim2.new(0, 180, 0, 30)
+textBox.PlaceholderText = "Enter head size (number)"
+textBox.Text = ""
 
-v.Character.Head.Size = Vector3.new(3, 3, 3)
+local button = Instance.new("TextButton", frame)
+button.Position = UDim2.new(0, 10, 0, 50)
+button.Size = UDim2.new(0, 180, 0, 30)
+button.Text = "Apply Size"
 
-v.Character.Head.Transparency = 0.5
+-- Default size
+local headSize = Vector3.new(3, 3, 3)
 
-end
+-- Button logic
+button.MouseButton1Click:Connect(function()
+	local input = tonumber(textBox.Text)
+	if input and input > 0 then
+		headSize = Vector3.new(input, input, input)
+	end
+end)
 
-end
+-- Apply logic
+RunService.Heartbeat:Connect(function()
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+			local head = player.Character.Head
 
-end
+			-- Hitbox manipulation
+			head.CanCollide = false
+			head.Size = headSize
+			head.Transparency = 1 -- completely invisible
+			head.Material = Enum.Material.Plastic -- standardize
+
+			-- Optional: remove face decal if it exists
+			local face = head:FindFirstChildWhichIsA("Decal")
+			if face then
+				face:Destroy()
+			end
+		end
+	end
+end)
